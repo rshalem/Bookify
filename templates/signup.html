@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+.form-group{
+    margin-top: 100px;
+    margin-left: 100px;
+    margin-right: 200px;
+}
+
+.form-control{
+    width:50%;
+}
+@media (min-width: 320px) {
+        .form-control {
+          width:200px;
+        }
+      }
+
+#pass{
+    margin-top: 0px;
+}
+
+.btn-primary{
+    margin-left: 100px;
+    margin-right: 200px;
+}
+
+</style>
+
+    <form>
+      <div class="form-group ">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+      </div>
+      <div class="form-group" id="pass">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+      </div>
+      <div class="form-group" id="pass">
+        <label for="exampleInputPassword1">Re-type Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}
+

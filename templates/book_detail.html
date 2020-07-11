@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <br>
+      <!-- Portfolio Item Row -->
+      <div class="row">
+
+        <div class="col-md-8">
+          <img class="img-fluid" src="http://placehold.it/750x500" alt="">
+        </div>
+
+        <div class="col-md-4">
+          <h3 class="my-3">{{ book.book_name }}</h3>
+          <p>{{ book.book_description }}</p>
+          <h3 class="my-3">Book Details</h3>
+          <ul>
+            <li>Genre: {{ book.genre }}</li>
+            <li>Price : {{ book.price }} $</li>
+          </ul>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to Cart</button>
+        </div>
+
+      </div>
+      <!-- /.row -->
+
+      <!-- Related Projects Row -->
+      <h3 class="my-4">Other Novels for {{ book.genre }}</h3>
+
+      <div class="row">
+        {% for single_book in book_for_genre %}
+        <div class="col-md-3 col-sm-6 mb-4">
+          <a href="#">
+                <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+              </a>
+
+          <br>
+          <p>{{ single_book.book_name }}</p>
+          <p>Author : {{ single_book.author }}</p>
+          <button class="btn btn-outline-success my-1 my-sm-0" type="submit">Add to Cart</button>
+          <button class="btn btn-outline-success  my-sm-0" type="submit"> <a href="{{ single_book.get_absolute_url }}">View</a></button>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+{% endblock %}

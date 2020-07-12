@@ -28,17 +28,31 @@ def book_detail(request, book_slug):
                }
     return render(request, 'book_detail.html', context=context)
 
+# SEARCH BLOCK CODE ---
+def isbn_search_is_number(value):
+    # for checking whether the entered search is by isbn and all digits
+
+    for i in range(len(value)):
+        if str(value[i]).isdigit() != True:
+            return False
+    return True
+
 def search_query(request):
-    print(request.POST)
-    search_request = request.POST['search_query']
-    try:
-        book = Book.objects.filter(Q(book_name__startswith=search_request) | Q(author__startswith=search_request))
-    except Book.DoesNotExist:
-        raise Http404
+
+    search_request = request.GET['search_query']
+    if isbn_search_is_number(search_request):
+        book = Book.objects.filter(isbn_no__exact=search_request)
+    else:
+        try:
+            book = Book.objects.filter(Q(book_name__startswith=search_request) | Q(author__startswith=search_request))
+        except Book.DoesNotExist:
+            raise Http404
 
     context = {'books': book}
 
     return render(request, 'home.html', context)
+
+# --- SEARCH BLOCK ENDS
 
 
 def user_signup(request):

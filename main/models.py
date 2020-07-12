@@ -49,6 +49,13 @@ class Book(models.Model):
         else:
             return False
 
+    def imgURL(self):
+        try:
+            url = self.book_image.url
+        except:
+            url = ''
+        return url
+
     def get_absolute_url(self):
         return reverse('main:detail', kwargs={'book_slug': self.book_slug})
 

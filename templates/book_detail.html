@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container">
-        <br>
+      <br>
       <!-- Portfolio Item Row -->
       <div class="row">
 
@@ -31,8 +31,8 @@
         {% for single_book in book_for_genre %}
         <div class="col-md-3 col-sm-6 mb-4">
           <a href="#">
-                <img class="img-fluid" src="http://placehold.it/500x300" alt="">
-              </a>
+            <img class="img-fluid" src="http://placehold.it/500x300" alt="">
+          </a>
 
           <br>
           <p>{{ single_book.book_name }}</p>
@@ -41,7 +41,30 @@
           <button class="btn btn-outline-success  my-sm-0" type="submit"> <a href="{{ single_book.get_absolute_url }}">View</a></button>
         </div>
         {% endfor %}
+      </div>
+      <hr>
+    <!------ reviews ---->
+      <h3 class="my-4">Reviews</h3>
+      <div class="row">
+        {% for review in reviews %}
+        <div class="col-md-3 col-sm-6 mb-4">
+
+          <p><b>{{ review.user.username }}</b></p>
+          <p>{{ review.review_content }}</p>
+          <p style="font-size: 12px">{{ review.review_date }}</p>
+
+        </div>
+        {% endfor %}
 
       </div>
+      <form class="form-row">
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Write a review</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="4" style="width: 300px"></textarea>
+            <br>
+            <button class="btn btn-outline-success my-1 my-sm-0" type="submit">Submit</button>
+        </div>
+      </form>
+    <!-- container ends-->
     </div>
 {% endblock %}

@@ -18,13 +18,15 @@ def homepage(request):
 def book_detail(request, book_slug):
     try:
         single_book_by_slug = Book.objects.get(book_slug=book_slug)
-        genre = single_book_by_slug.genre
-        books_related_to_genre = genre.genres.all()
+        reviews = single_book_by_slug.review_set.all()
+        books_related_to_genre = single_book_by_slug.genre.genres.all() # single_book_by_slug.genre.book_set.all()
+
     except Book.DoesNotExist:
         raise Http404
 
     context = {'book': single_book_by_slug,
                'book_for_genre': books_related_to_genre,
+               'reviews': reviews,
                }
     return render(request, 'book_detail.html', context=context)
 
@@ -40,20 +42,22 @@ def isbn_search_is_number(value):
 def search_query(request):
 
     search_request = request.GET['search_query']
-    if isbn_search_is_number(search_request):
-        book = Book.objects.filter(isbn_no__exact=search_request)
+    if search_request != '':
+        if isbn_search_is_number(search_request):
+            book = Book.objects.filter(isbn_no__exact=search_request)
+        else:
+            try:
+                book = Book.objects.filter(Q(book_name__startswith=search_request) | Q(author__startswith=search_request))
+            except Book.DoesNotExist:
+                raise Http404
     else:
-        try:
-            book = Book.objects.filter(Q(book_name__startswith=search_request) | Q(author__startswith=search_request))
-        except Book.DoesNotExist:
-            raise Http404
+        raise Http404
 
     context = {'books': book}
 
     return render(request, 'home.html', context)
 
 # --- SEARCH BLOCK ENDS
-
 
 def user_signup(request):
     return render(request, 'signup.html')

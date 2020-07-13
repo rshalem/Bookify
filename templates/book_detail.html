@@ -17,8 +17,15 @@
           <ul>
             <li>Genre: {{ book.genre }}</li>
             <li>Price : {{ book.price }} $</li>
+
           </ul>
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to Cart</button>
+
+          <form action="#">
+              <label for="quantity">Quantity:</label>
+              <input type="number" id="quantity" name="quantity" min="1" max="5">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to Cart</button>
+          </form>
+
         </div>
 
       </div>
@@ -37,6 +44,7 @@
           <br>
           <p>{{ single_book.book_name }}</p>
           <p>Author : {{ single_book.author }}</p>
+
           <button class="btn btn-outline-success my-1 my-sm-0" type="submit">Add to Cart</button>
           <button class="btn btn-outline-success  my-sm-0" type="submit"> <a href="{{ single_book.get_absolute_url }}">View</a></button>
         </div>

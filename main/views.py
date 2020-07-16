@@ -3,17 +3,22 @@ from django.db.models import Q
 
 from .models import *
 
+
 def homepage(request):
     try:
         book = Book.objects.all()
-        genre = Genre.objects.all()
     except Book.DoesNotExist:
         raise Http404
 
-    context = {'books': book,
-               'genres': genre
-               }
+    context = {'books': book}
     return render(request, 'home.html', context=context)
+
+def genre(request, genre_name):
+    books_related_to_genre = Book.objects.filter(genre__genre_name=genre_name)
+
+    context = {'books': books_related_to_genre}
+    return render(request, 'home.html', context=context)
+
 
 def book_detail(request, book_slug):
     try:
@@ -50,7 +55,6 @@ def search_query(request):
             book = Book.objects.filter(Q(book_name__startswith=search_request) | Q(author__startswith=search_request))
         except Book.DoesNotExist:
             raise Http404
-
 
     context = {'books': book}
 

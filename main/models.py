@@ -18,7 +18,7 @@ class Address(models.Model):
     shipping_zip = models.CharField(max_length=10)
 
     def __str__(self):
-        return f" {self.shipping_first_name}, {self.shipping_address_one.split(',')[0]}"
+        return f"{self.shipping_first_name}, {self.shipping_address_one.split(',')[0]}"
 
 class Genre(models.Model):
     genre_name = models.CharField(max_length=50)

@@ -3,6 +3,23 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+
+class Address(models.Model):
+    shipping_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shipping_first_name = models.CharField(max_length=20)
+    shipping_last_name = models.CharField(max_length=20)
+    shipping_house_no = models.CharField(max_length=10)
+    phone_number = models.CharField(max_length=12, default='')
+    shipping_address_one = models.CharField(max_length=50)
+    shipping_address_two = models.CharField(max_length=50, blank=True)
+    shipping_city = models.CharField(max_length=50)
+    shipping_state = models.CharField(max_length=20)
+    shipping_country = models.CharField(max_length=20)
+    shipping_zip = models.CharField(max_length=10)
+
+    def __str__(self):
+        return f" {self.shipping_first_name}, {self.shipping_address_one.split(',')[0]}"
+
 class Genre(models.Model):
     genre_name = models.CharField(max_length=50)
 
@@ -49,6 +66,7 @@ class Book(models.Model):
         else:
             return False
 
+    @property
     def imgURL(self):
         try:
             url = self.book_image.url
@@ -73,4 +91,26 @@ class Review(models.Model):
 
     def __str__(self):
         return self.review_content[:10]
+
+# cart
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    complete = models.BooleanField(default=False, null=True, blank=True)
+    transaction_id = models.CharField(max_length=200, null=True)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    book = models.OneToOneField(Book, on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.book.book_name
+
+    @property
+    def total_price(self):
+        total = self.quantity * self.book.price
+        return total
 

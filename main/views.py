@@ -1,4 +1,5 @@
-from django.shortcuts import render, Http404
+from django.contrib import messages
+from django.shortcuts import render, redirect, Http404
 from django.db.models import Q
 
 from .models import *
@@ -14,7 +15,10 @@ def homepage(request):
     return render(request, 'home.html', context=context)
 
 def genre(request, genre_name):
-    books_related_to_genre = Book.objects.filter(genre__genre_name=genre_name)
+    try:
+        books_related_to_genre = Book.objects.filter(genre__genre_name=genre_name)
+    except Book.DoesNotExist:
+        raise Http404
 
     context = {'books': books_related_to_genre}
     return render(request, 'home.html', context=context)
@@ -24,7 +28,8 @@ def book_detail(request, book_slug):
     try:
         single_book_by_slug = Book.objects.get(book_slug=book_slug)
         reviews = single_book_by_slug.review_set.all()
-        books_related_to_genre = single_book_by_slug.genre.genres.all() # single_book_by_slug.genre.book_set.all()
+        books_related_to_genre = single_book_by_slug.genre.genres.all().exclude(book_name=single_book_by_slug.book_name)
+        # single_book_by_slug.genre.book_set.all()
 
     except Book.DoesNotExist:
         raise Http404
@@ -65,5 +70,30 @@ def search_query(request):
 def user_signup(request):
     return render(request, 'signup.html')
 
+def add_to_cart(request, book_slug):
+    single_book_slug = Book.objects.get(book_slug=book_slug)
+    # getting first matched obj and returns queryset
+    order_item = OrderItem.objects.filter(book__book_slug=single_book_slug.book_slug).first()
+
+    if order_item is not None:
+        order_item.quantity += 1
+        order_item.save()
+    else:
+        OrderItem.objects.create(book=single_book_slug, quantity=1)
+
+    return redirect('main:cart')
+
+
 def cart(request):
-    return render(request, 'cart.html')
+    all_order_items = OrderItem.objects.all()
+    total_cart_items = 0
+    for item in all_order_items:
+        total_cart_items += item.quantity
+
+    context = {'order_items': all_order_items,
+               'total_items': total_cart_items}
+
+    return render(request, 'cart.html', context)
+
+def checkout(request):
+    return render(request, 'checkout.html')

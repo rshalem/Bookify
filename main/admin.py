@@ -5,7 +5,7 @@ class BookAdmin(admin.ModelAdmin):
     list_display = ('book_name', 'author', 'rating', 'genre', 'isbn_no', 'availability',)
 
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('order', 'book', 'quantity',)
+    list_display = ('book', 'quantity',)
 
 
 # Register your models here.

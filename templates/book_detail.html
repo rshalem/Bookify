@@ -20,11 +20,8 @@
 
           </ul>
 
-          <form action="#">
-              <label for="quantity">Quantity:</label>
-              <input type="number" id="quantity" name="quantity" min="1" max="2">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add to Cart</button>
-          </form>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit"> <a href="{% url 'main:add-to-cart' book.book_slug %}">Add to Cart</a></button>
+
 
         </div>
 

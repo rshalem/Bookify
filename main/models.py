@@ -92,25 +92,35 @@ class Review(models.Model):
     def __str__(self):
         return self.review_content[:10]
 
-# cart
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    date_ordered = models.DateTimeField(auto_now_add=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    complete = models.BooleanField(default=False, null=True, blank=True)
-    transaction_id = models.CharField(max_length=200, null=True)
-
-
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    # OrderItem = BookItem
     book = models.OneToOneField(Book, on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.IntegerField(default=0)
+    quantity = models.IntegerField(default=0, null=True)
 
     def __str__(self):
         return self.book.book_name
 
     @property
     def total_price(self):
-        total = self.quantity * self.book.price
+        if self.id:
+            total = self.quantity * self.book.price
+        else:
+            total = 0
         return total
 
+# cart
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    order_item = models.ManyToManyField(OrderItem)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    complete = models.BooleanField(default=False, null=True, blank=True)
+
+    def __str__(self):
+        return f"Order object {str(self.id)}"
+
+    def cart_total(self):
+        total_cart_value = 0
+        for item in self.order_item.all():
+            total_cart_value += item.total_price
+        return total_cart_value

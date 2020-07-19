@@ -20,9 +20,9 @@
 
   <body class="bg-light">
     <div class="container">
-  <div class="py-5 text-center">
-     <h2>Your cart</h2>
-  </div>
+      <div class="py-5 text-center">
+         <h2>Your cart</h2>
+      </div>
 
   <div class="row">
     <div class="col-md-12 order-md-2 mb-4">
@@ -49,13 +49,13 @@
         {% endfor %}
 
         <li class="list-group-item d-flex justify-content-between">
-          <span>Total (INR)</span>
-          <strong>&#8377;20</strong>
+            <span><b>Total (INR)</b></span>
+          <strong>&#8377;1899.95</strong>
         </li>
       </ul>
 
       <button class="btn btn-outline-success my-1 my-sm-0" type="submit"> <a href="{% url 'main:home' %}">Continue Shopping</a></button>
-      <button class="btn btn-outline-success my-1 my-sm-8" type="submit"><a href="{% url 'main:checkout' %}">Checkout</a></button>
+      <button class="btn btn-outline-success my-1 my-sm-8" type="submit"><a href="{% url 'main:address' %}">Checkout</a></button>
 
 
     </div>

@@ -124,3 +124,6 @@ class Order(models.Model):
         for item in self.order_item.all():
             total_cart_value += item.total_price
         return total_cart_value
+
+class Payment(models.Model):
+    pass

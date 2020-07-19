@@ -64,7 +64,6 @@ def search_query(request):
     context = {'books': book}
 
     return render(request, 'home.html', context)
-
 # --- SEARCH BLOCK ENDS
 
 def user_signup(request):
@@ -95,5 +94,8 @@ def cart(request):
 
     return render(request, 'cart.html', context)
 
-def checkout(request):
-    return render(request, 'checkout.html')
+def add_address(request):
+    return render(request, 'address.html')
+
+def payment(request):
+    return render(request, 'payment.html')

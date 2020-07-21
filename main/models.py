@@ -10,6 +10,7 @@ class Address(models.Model):
     shipping_last_name = models.CharField(max_length=20)
     shipping_house_no = models.CharField(max_length=10)
     phone_number = models.CharField(max_length=12, default='')
+    shipping_user_email = models.EmailField(max_length=50, default='')
     shipping_address_one = models.CharField(max_length=50)
     shipping_address_two = models.CharField(max_length=50, blank=True)
     shipping_city = models.CharField(max_length=50)
@@ -95,7 +96,7 @@ class Review(models.Model):
 class OrderItem(models.Model):
     # OrderItem = BookItem
     book = models.OneToOneField(Book, on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.IntegerField(default=0, null=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
 
     def __str__(self):
         return self.book.book_name

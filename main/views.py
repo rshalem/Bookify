@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, Http404
 from django.db.models import Q
+from django.db import IntegrityError
 
 from .models import *
-
+from .forms import AddressForm
 
 def homepage(request):
     try:
@@ -67,6 +68,23 @@ def search_query(request):
 # --- SEARCH BLOCK ENDS
 
 def user_signup(request):
+    username1 = request.POST.get('username')
+    email = request.POST.get('email')
+    password1 = request.POST.get('password1')
+    password2 = request.POST.get('password2')
+
+    if request.method == 'POST':
+        if password1 == password2:
+            try:
+                user = User.objects.create_user(username=username1, email=email)
+                user.save()
+                return redirect('main:home')
+
+            except IntegrityError:
+                return render(request, 'signup.html', {'error': "User already been taken"})
+        else:
+            return render(request, 'signup.html', {'error': "Password didn't match"})
+
     return render(request, 'signup.html')
 
 def add_to_cart(request, book_slug):
@@ -95,6 +113,7 @@ def cart(request):
     return render(request, 'cart.html', context)
 
 def add_address(request):
+
     return render(request, 'address.html')
 
 def payment(request):

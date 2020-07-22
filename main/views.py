@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, Http404
 from django.db.models import Q
 from django.db import IntegrityError
 
 from .models import *
 from .forms import AddressForm
+
 
 def homepage(request):
     try:
@@ -14,6 +16,7 @@ def homepage(request):
 
     context = {'books': book}
     return render(request, 'home.html', context=context)
+
 
 def genre(request, genre_name):
     try:
@@ -41,6 +44,7 @@ def book_detail(request, book_slug):
                }
     return render(request, 'book_detail.html', context=context)
 
+
 # SEARCH BLOCK CODE ---
 def isbn_search_is_number(value):
     # for checking whether the entered search is by isbn and all digits
@@ -50,8 +54,8 @@ def isbn_search_is_number(value):
             return False
     return True
 
-def search_query(request):
 
+def search_query(request):
     search_request = request.GET['search_query']
 
     if isbn_search_is_number(search_request):
@@ -65,6 +69,8 @@ def search_query(request):
     context = {'books': book}
 
     return render(request, 'home.html', context)
+
+
 # --- SEARCH BLOCK ENDS
 
 def user_signup(request):
@@ -86,6 +92,7 @@ def user_signup(request):
             return render(request, 'signup.html', {'error': "Password didn't match"})
 
     return render(request, 'signup.html')
+
 
 def add_to_cart(request, book_slug):
     single_book_slug = Book.objects.get(book_slug=book_slug)
@@ -112,9 +119,24 @@ def cart(request):
 
     return render(request, 'cart.html', context)
 
-def add_address(request):
 
-    return render(request, 'address.html')
+#@login_required(login_url='/login/')
+def add_address(request):
+    if request.method == 'POST':
+        form = AddressForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            return redirect('main:payment')
+
+        else:
+            messages.info(request, 'Not valid input')
+
+    form = AddressForm(initial={'shipping_user': request.user})
+
+    context = {'form': form}
+
+    return render(request, 'address.html', context)
+
 
 def payment(request):
     return render(request, 'payment.html')

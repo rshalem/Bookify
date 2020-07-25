@@ -12,10 +12,11 @@ from django.forms import ModelForm, TextInput, EmailInput
 
 from .models import Address
 
+
 class AddressForm(ModelForm):
     class Meta:
         model = Address
-        fields = '__all__'
+        exclude = ['shipping_user']
 
         widgets = {
             'shipping_first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}),
@@ -23,7 +24,9 @@ class AddressForm(ModelForm):
             'shipping_user_email': EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter valid email'}),
             'shipping_address_one': TextInput(attrs={'class': 'form-control', 'placeholder': 'Address 1'}),
             'shipping_address_two': TextInput(attrs={'class': 'form-control', 'placeholder': 'Address 2'}),
+            'shipping_city': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter City'}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter registered number'}),
+            'shipping_house_no': TextInput(attrs={'class': 'form-control', 'placeholder': 'House no.'}),
             'shipping_country': TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}),
             'shipping_state': TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}),
             'shipping_zip': TextInput(attrs={'class': 'form-control', 'placeholder': 'Pincode'}),
@@ -65,3 +68,8 @@ class AddressForm(ModelForm):
             self.add_error('shipping_address_two', message)
             # or
             # self.add_error('shipping_first_name', forms.ValidationError(message))
+
+# class PaymentForm(ModelForm):
+#     class Meta:
+#         model = Payment
+#         fields = '__all__'

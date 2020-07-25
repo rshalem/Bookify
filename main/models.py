@@ -21,11 +21,13 @@ class Address(models.Model):
     def __str__(self):
         return f"{self.shipping_first_name}, {self.shipping_address_one.split(',')[0]}"
 
+
 class Genre(models.Model):
     genre_name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.genre_name
+
 
 class Location(models.Model):
     city_name = models.CharField(max_length=50)
@@ -34,11 +36,13 @@ class Location(models.Model):
     def __str__(self):
         return self.city_name
 
+
 class Language(models.Model):
     language_name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.language_name
+
 
 class Book(models.Model):
     book_name = models.CharField(max_length=50)
@@ -83,6 +87,7 @@ class Book(models.Model):
             self.book_slug = slugify(self.book_name)
         super(Book, self).save(*args, **kwargs)
 
+
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -92,6 +97,7 @@ class Review(models.Model):
 
     def __str__(self):
         return self.review_content[:10]
+
 
 class OrderItem(models.Model):
     # OrderItem = BookItem
@@ -109,6 +115,24 @@ class OrderItem(models.Model):
             total = 0
         return total
 
+
+class Payment(models.Model):
+
+    payment_choices = [
+        ('S', 'Stripe'),
+        ('P', 'Paytm'),
+    ]
+
+    payment_mode = models.CharField(max_length=6, choices=payment_choices, default='S')
+    transaction_id = models.CharField(max_length=50)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.FloatField()
+    transaction_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"User name: {self.user.username} | Transaction id: {self.transaction_id}"
+
+
 # cart
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -125,6 +149,3 @@ class Order(models.Model):
         for item in self.order_item.all():
             total_cart_value += item.total_price
         return total_cart_value
-
-class Payment(models.Model):
-    pass

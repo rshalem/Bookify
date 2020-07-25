@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, Http404
 from django.db.models import Q
@@ -69,29 +70,46 @@ def search_query(request):
     context = {'books': book}
 
     return render(request, 'home.html', context)
-
-
 # --- SEARCH BLOCK ENDS
 
+
 def user_signup(request):
-    username1 = request.POST.get('username')
+    username = request.POST.get('username')
     email = request.POST.get('email')
     password1 = request.POST.get('password1')
     password2 = request.POST.get('password2')
 
     if request.method == 'POST':
         if password1 == password2:
-            try:
-                user = User.objects.create_user(username=username1, email=email)
-                user.save()
-                return redirect('main:home')
+            if password1 and password2 != username:
+                try:
+                    user = User.objects.create_user(username=username, email=email, password=password2)
+                    user.save()
+                    return redirect('main:home')
 
-            except IntegrityError:
-                return render(request, 'signup.html', {'error': "User already been taken"})
+                except IntegrityError:
+                    return render(request, 'signup.html', {'error': "User already been taken"})
+            else:
+                return render(request, 'signup.html', {'error': 'Username & password should not match'})
         else:
             return render(request, 'signup.html', {'error': "Password didn't match"})
 
     return render(request, 'signup.html')
+
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('main:home')
+        else:
+            return render(request, 'login.html', {'error': 'User does not exists'})
+
+    return render(request, 'login.html')
 
 
 def add_to_cart(request, book_slug):
@@ -120,18 +138,21 @@ def cart(request):
     return render(request, 'cart.html', context)
 
 
-#@login_required(login_url='/login/')
+@login_required(login_url='/login/')
 def add_address(request):
     if request.method == 'POST':
         form = AddressForm(request.POST or None)
         if form.is_valid():
-            form.save()
+            # returns cleaned data & calls clean <field_name> validators
+            obj = form.save(commit=False)
+            obj.shipping_user = request.user
+            obj.save()
             return redirect('main:payment')
 
-        else:
-            messages.info(request, 'Not valid input')
+        return render(request, 'address.html', {'error': form.errors, 'form': form})
 
-    form = AddressForm(initial={'shipping_user': request.user})
+    else:
+        form = AddressForm()
 
     context = {'form': form}
 

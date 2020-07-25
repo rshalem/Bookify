@@ -20,6 +20,7 @@
           font-size: 3.5rem;
         }
       }
+
     </style>
     <!-- Custom styles for this template -->
     {% if messages %}
@@ -44,6 +45,17 @@
             <p class="lead text-muted">Feel free to explore & add new if you have any lying around ! </p>
 
         </div>
+
+        <div class="row">
+            <div class="col-sm-2 offset-sm-5 text-center" style="border: #19865C">
+                <form action="{% url 'main:search' %}"  method="get">
+
+                  <input class="form-control mr-sm-2" type="search" name="search_query"  placeholder="By ISBN/Author/Book" aria-label="Search" required>
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+
       </section>
 
       <div class="album py-5 bg-light">

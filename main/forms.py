@@ -14,6 +14,9 @@ from .models import Address
 
 
 class AddressForm(ModelForm):
+
+    # providing extra fields that will be required in the model form
+    # eg: house_colour = models.CharField(max_length = 10)
     class Meta:
         model = Address
         exclude = ['shipping_user']

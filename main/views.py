@@ -160,4 +160,5 @@ def add_address(request):
 
 
 def payment(request):
+
     return render(request, 'payment.html')

@@ -112,6 +112,12 @@ def login_user(request):
     return render(request, 'login.html')
 
 
+def logout_user(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('main:login')
+
+
 def add_to_cart(request, book_slug):
     single_book_slug = Book.objects.get(book_slug=book_slug)
     # getting first matched obj and returns queryset

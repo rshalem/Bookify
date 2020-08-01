@@ -25,6 +25,14 @@ class Address(models.Model):
 class Genre(models.Model):
     genre_name = models.CharField(max_length=50)
 
+    # Meta class of the model, for permissions to a given set of users or groups
+    class Meta:
+        # can only add, not change or delete
+        default_permissions = ('add',)
+
+        # adding custom permissions
+        permissions = (('can_add_genre', 'Add a genre'),)
+
     def __str__(self):
         return self.genre_name
 
@@ -124,10 +132,10 @@ class Payment(models.Model):
     ]
 
     payment_mode = models.CharField(max_length=6, choices=payment_choices, default='S')
-    transaction_id = models.CharField(max_length=50)
+    transaction_id = models.CharField(max_length=50, default='')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.FloatField()
-    transaction_date = models.DateTimeField(auto_now_add=True)
+    amount = models.FloatField(default=0)
+    transaction_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return f"User name: {self.user.username} | Transaction id: {self.transaction_id}"

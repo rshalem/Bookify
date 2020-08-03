@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, Http404
 from django.db.models import Q
 from django.db import IntegrityError
+from django.shortcuts import render, redirect, Http404
+from django.utils import timezone
+from django.views.generic import View
 
 from .models import *
 from .forms import AddressForm
@@ -117,42 +119,72 @@ def logout_user(request):
         logout(request)
         return redirect('main:login')
 
-
-def add_to_cart(request, book_slug):
-    single_book_slug = Book.objects.get(book_slug=book_slug)
-    # getting first matched obj and returns queryset
-    order_item = OrderItem.objects.filter(book__book_slug=single_book_slug.book_slug).first()
-
-    if order_item is not None:
-        order_item.quantity += 1
-        order_item.save()
-    else:
-        OrderItem.objects.create(book=single_book_slug, quantity=1)
-
-    return redirect('main:cart')
-
-
+@login_required(login_url='/login/')
 def cart(request):
-    all_order_items = OrderItem.objects.all()
+    all_order_items = OrderItem.objects.filter(user=request.user)
     total_cart_items = 0
+
     for item in all_order_items:
         total_cart_items += item.quantity
 
     context = {'order_items': all_order_items,
-               'total_items': total_cart_items}
+               'total_items': total_cart_items,
+               }
 
     return render(request, 'cart.html', context)
 
 
 @login_required(login_url='/login/')
+def add_to_cart(request, book_slug):
+
+    """
+    after clicking add to cart, check if order item created, if not create one
+    check if order obj is available for that user, if yes then increase the quantity of the item associatd with order
+    if order obj doesnt exist, go ahead and create one, & associate order items with that order
+
+    """
+    single_book_slug = Book.objects.get(book_slug=book_slug)
+    # getting first matched obj and returns queryset
+
+    # the shining book item
+    items, created = OrderItem.objects.get_or_create(user=request.user, book=single_book_slug)
+
+    # ex for manindra, order exists? if not create one and add those items as m2m
+    order_qs = Order.objects.filter(user=request.user, complete=False)
+
+    # checking user has order object or not
+    if order_qs.exists():
+        order = order_qs[0]
+
+        if order.order_item.filter(book__book_slug=single_book_slug.book_slug).exists():
+            items.quantity += 1
+            items.save()
+
+        else:
+            order.order_item.add(items)
+
+    else:
+        # creating new order with the current user
+        ordered_date = timezone.now()
+        new_order = Order.objects.create(user=request.user, date_ordered=ordered_date)
+        new_order.order_item.add(items)
+        new_order.save()
+
+    return redirect('main:cart')
+
+
+
 def add_address(request):
+
     if request.method == 'POST':
         form = AddressForm(request.POST or None)
         if form.is_valid():
+
             # returns cleaned data & calls clean <field_name> validators
             obj = form.save(commit=False)
             obj.shipping_user = request.user
             obj.save()
+
             return redirect('main:payment')
 
         return render(request, 'address.html', {'error': form.errors, 'form': form})
@@ -165,6 +197,10 @@ def add_address(request):
     return render(request, 'address.html', context)
 
 
-def payment(request):
+class PaymentView(View):
+    def get(self, *args, **kwargs):
+        pass
 
-    return render(request, 'payment.html')
+    # token for payment comes with the request
+    def post(self, *args, **kwargs):
+        pass

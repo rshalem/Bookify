@@ -8,6 +8,7 @@ safer side
 """
 
 from django import forms
+from django_countries.widgets import CountrySelectWidget
 from django.forms import ModelForm, TextInput, EmailInput
 
 from .models import Address
@@ -30,7 +31,7 @@ class AddressForm(ModelForm):
             'shipping_city': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter City'}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter registered number'}),
             'shipping_house_no': TextInput(attrs={'class': 'form-control', 'placeholder': 'House no.'}),
-            'shipping_country': TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}),
+            'shipping_country': CountrySelectWidget(attrs={'class': 'form-control', 'placeholder': 'Select country'}),
             'shipping_state': TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}),
             'shipping_zip': TextInput(attrs={'class': 'form-control', 'placeholder': 'Pincode'}),
         }
@@ -54,7 +55,7 @@ class AddressForm(ModelForm):
         return value
 
     def clean(self):
-        # Call clean() to explicitly call the base form class
+        # Call clean() to explicitly call the base form class ie ModelForm
         # since its a class wide method, overriding is done
         super(AddressForm, self).clean()
         first_name = self.cleaned_data.get('shipping_first_name', '')

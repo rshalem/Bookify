@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django_countries.fields import CountryField
 
 
 class Address(models.Model):
@@ -15,7 +16,7 @@ class Address(models.Model):
     shipping_address_two = models.CharField(max_length=50, blank=True)
     shipping_city = models.CharField(max_length=50)
     shipping_state = models.CharField(max_length=20)
-    shipping_country = models.CharField(max_length=20)
+    shipping_country = CountryField(multiple=False)
     shipping_zip = models.CharField(max_length=10)
 
     def __str__(self):
@@ -109,8 +110,9 @@ class Review(models.Model):
 
 class OrderItem(models.Model):
     # OrderItem = BookItem
-    book = models.OneToOneField(Book, on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.IntegerField(default=1, null=True, blank=True)
 
     def __str__(self):
         return self.book.book_name
@@ -146,7 +148,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     order_item = models.ManyToManyField(OrderItem)
     date_ordered = models.DateTimeField(auto_now_add=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True, null=True)
     complete = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):

@@ -149,13 +149,14 @@ def add_to_cart(request, book_slug):
     # the shining book item
     items, created = OrderItem.objects.get_or_create(user=request.user, book=single_book_slug)
 
-    # ex for manindra, order exists? if not create one and add those items as m2m
+    # getting all order object list ie not complete for current user
     order_qs = Order.objects.filter(user=request.user, complete=False)
 
-    # checking user has order object or not
     if order_qs.exists():
+        # grabbing first in the list
         order = order_qs[0]
 
+        # if order item exists, increment 1 or create one with the new items
         if order.order_item.filter(book__book_slug=single_book_slug.book_slug).exists():
             items.quantity += 1
             items.save()

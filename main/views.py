@@ -149,7 +149,7 @@ def add_to_cart(request, book_slug):
     # the shining book item
     items, created = OrderItem.objects.get_or_create(user=request.user, book=single_book_slug)
 
-    # getting all order object list ie not complete for current user
+    # getting (all) order object list ie not complete for current user
     order_qs = Order.objects.filter(user=request.user, complete=False)
 
     if order_qs.exists():
@@ -186,7 +186,12 @@ def add_address(request):
             obj.shipping_user = request.user
             obj.save()
 
-            return redirect('main:payment')
+            # getting active open order for current user, & adding address
+            order = Order.objects.get(user=request.user, complete=False)
+            order.address = obj
+            order.save()
+
+            return redirect('main:home')
 
         return render(request, 'address.html', {'error': form.errors, 'form': form})
 

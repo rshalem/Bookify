@@ -159,3 +159,7 @@ class Order(models.Model):
         for item in self.order_item.all():
             total_cart_value += item.total_price
         return total_cart_value
+
+    def order_status_complete(self):
+        self.complete = True
+        return self.complete

@@ -100,16 +100,19 @@ def user_signup(request):
 
 
 def login_user(request):
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+
+        # session : request.session['password'] = password
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect('main:home')
-        else:
-            return render(request, 'login.html', {'error': 'User does not exists'})
+
+        return render(request, 'login.html', {'error': 'User does not exists'})
 
     return render(request, 'login.html')
 
@@ -118,6 +121,7 @@ def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
         return redirect('main:login')
+
 
 @login_required(login_url='/login/')
 def cart(request):
@@ -139,14 +143,14 @@ def add_to_cart(request, book_slug):
 
     """
     after clicking add to cart, check if order item created, if not create one
-    check if order obj is available for that user, if yes then increase the quantity of the item associatd with order
+    check if order obj is available for that user, if yes then increase the quantity of the item associated with order
     if order obj doesnt exist, go ahead and create one, & associate order items with that order
 
     """
+    # getting book object
     single_book_slug = Book.objects.get(book_slug=book_slug)
-    # getting first matched obj and returns queryset
 
-    # the shining book item
+    # the-shining book item
     items, created = OrderItem.objects.get_or_create(user=request.user, book=single_book_slug)
 
     # getting (all) order object list ie not complete for current user
@@ -172,7 +176,6 @@ def add_to_cart(request, book_slug):
         new_order.save()
 
     return redirect('main:cart')
-
 
 
 def add_address(request):

@@ -1,0 +1,24 @@
+** how ordering works **
+
+
+* a book is added to the cart
+* while adding, an order_item is created
+* now order object is filtered for a current user with status incomplete order
+* all order objects is returned & stored in a variable
+* latest order is split using [0] indexing, & is stored in a var
+
+* now that var ie order obj is checked if it exists in the db
+* if order exists, now associated order item with that order is checked in the db
+* if order item associated to that order exists, quantity is added +1 & saved
+* if order item associated to that order DNE, then an order.order_item.add(items) is added as its m2m
+
+* now that var ie order obj is checked if it DNE in the db,
+* then an new order object is created & saved along with the required fields,
+
+
+* now since Order obj is created for an user with status incomplete, we can add Shipping add obj, payment obj & other
+  dependencies later as we have defined blank and null for those to True
+
+
+
+* one user can have single open order logically
